@@ -22,15 +22,15 @@ func TestSpec(t *testing.T) {
 		sut = NewCart()
 
 		Convey("Then it has an uid", func() {
-			id := sut.Id()
-			So(sut.Id(), ShouldNotBeNil)
-			So(sut.Id(), ShouldEqual, id) // Sicherstellen, dass auch immer dieselbe Id zurück kommt.
+			id := sut.ID()
+			So(sut.ID(), ShouldNotBeNil)
+			So(sut.ID(), ShouldEqual, id) // Sicherstellen, dass auch immer dieselbe Id zurück kommt.
 
 			Convey("When I create another cart", func() {
 				sut2 = NewCart()
 
 				Convey("Then it has a different uid than the pervious cart", func() {
-					So(sut2.Id(), ShouldNotEqual, sut.Id())
+					So(sut2.ID(), ShouldNotEqual, sut.ID())
 				})
 			})
 		})
@@ -42,7 +42,7 @@ func TestSpec(t *testing.T) {
 
 	Convey("Given an eventstream", t, func() {
 		tmp := NewCart()
-		id = tmp.Id()
+		id = tmp.ID()
 		tmp.SetName("Yannick")
 		stream = tmp.UncommitedChanges()
 
@@ -55,13 +55,13 @@ func TestSpec(t *testing.T) {
 			})
 
 			Convey("With the same uid as before", func() {
-				So(id, ShouldEqual, sut.Id())
+				So(id, ShouldEqual, sut.ID())
 			})
 		})
 
 		Convey("And an eventstream from another enitity", func() {
 			tmp = NewCart()
-			id2 = tmp.Id()
+			id2 = tmp.ID()
 			tmp.SetName("Ederer")
 			tmp.SetName("Meißner")
 			stream2 = tmp.UncommitedChanges()
@@ -74,7 +74,7 @@ func TestSpec(t *testing.T) {
 					So(sut, ShouldNotEqual, sut2)
 					So(sut.Name(), ShouldEqual, "Yannick")
 					So(sut2.Name(), ShouldEqual, "Meißner")
-					So(sut.Id(), ShouldNotEqual, sut2.Id())
+					So(sut.ID(), ShouldNotEqual, sut2.ID())
 				})
 			})
 		})
