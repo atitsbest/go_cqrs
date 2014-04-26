@@ -6,7 +6,8 @@ import (
 )
 
 type Cart struct {
-	EventSource *common.EventSource
+	// Muss im CTR initialisiert werden.
+	common.EventSource
 
 	name string
 }
@@ -24,8 +25,7 @@ func NewCart() *Cart {
 // CTR
 func NewCartFromEventStream(es []common.Event) *Cart {
 	cart := new(Cart)
-	cart.EventSource = common.NewEventSource(cart)
-	cart.EventSource.CreateFromEventStream(es)
+	cart.EventSource = common.CreateFromEventStream(cart, es)
 
 	return cart
 }

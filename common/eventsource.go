@@ -5,20 +5,35 @@ import (
 	"strings"
 )
 
-type EventSource struct {
+type EventSource interface {
+	ApplyChange(e Event)
+	UncommitedChanges() []Event
+}
+
+type eventSource struct {
 	changes []Event
 	source  interface{}
 }
 
 // CTR
-func NewEventSource(source interface{}) *EventSource {
-	es := new(EventSource)
+func NewEventSource(source interface{}) *eventSource {
+	es := &eventSource{}
 	es.source = source
 	return es
 }
 
+// Events von einem EventStream lesen.
+func CreateFromEventStream(source interface{}, es []Event) *eventSource {
+	result := NewEventSource(source)
+	for _, e := range es {
+		result.handleChange(e)
+	}
+
+	return result
+}
+
 // Domain-Event anwenden (aber nicht persistieren)
-func (self *EventSource) ApplyChange(e Event) {
+func (self *eventSource) ApplyChange(e Event) {
 	// Event-Handler aufrufen
 	self.handleChange(e)
 
@@ -27,19 +42,12 @@ func (self *EventSource) ApplyChange(e Event) {
 }
 
 // Liste mit allen noch nicht gespeicherten Events.
-func (self *EventSource) UncommitedChanges() []Event {
+func (self *eventSource) UncommitedChanges() []Event {
 	return self.changes
 }
 
-// Events von einem EventStream lesen.
-func (self *EventSource) CreateFromEventStream(es []Event) {
-	for _, e := range es {
-		self.handleChange(e)
-	}
-}
-
 // Event vom Entity verarbeiten lassen.
-func (self *EventSource) handleChange(e Event) {
+func (self *eventSource) handleChange(e Event) {
 	sourceType := reflect.TypeOf(self.source)
 	mc := sourceType.NumMethod()
 	for i := 0; i < mc; i += 1 {
