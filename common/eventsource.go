@@ -6,11 +6,13 @@ import (
 )
 
 type EventSource interface {
+	Id() EventSourceId
 	ApplyChange(e Event)
 	UncommitedChanges() []Event
 }
 
 type eventSource struct {
+	id      EventSourceId
 	changes []Event
 	source  interface{}
 }
@@ -19,6 +21,7 @@ type eventSource struct {
 func NewEventSource(source interface{}) *eventSource {
 	es := &eventSource{}
 	es.source = source
+	es.id = NewEventSourceId()
 	return es
 }
 
@@ -30,6 +33,11 @@ func CreateFromEventStream(source interface{}, es []Event) *eventSource {
 	}
 
 	return result
+}
+
+// UId für diesen EventSoruce
+func (self *eventSource) Id() EventSourceId {
+	return self.id
 }
 
 // Domain-Event anwenden (aber nicht persistieren)
