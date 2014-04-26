@@ -17,15 +17,15 @@ func NewCart() *Cart {
 	cart := new(Cart)
 	cart.EventSource = common.NewEventSource(cart)
 
-	cart.EventSource.ApplyChange(events.CartCreated{})
+	cart.ApplyChange(events.CartCreated{})
 
 	return cart
 }
 
 // CTR
-func NewCartFromEventStream(es []common.Event) *Cart {
+func CreateCartFromEventStream(id common.EventSourceId, es []common.Event) *Cart {
 	cart := new(Cart)
-	cart.EventSource = common.CreateFromEventStream(cart, es)
+	cart.EventSource = common.CreateFromEventStream(cart, id, es)
 
 	return cart
 }
@@ -33,6 +33,11 @@ func NewCartFromEventStream(es []common.Event) *Cart {
 // Name
 func (self *Cart) Name() string {
 	return self.name
+}
+
+// Name ändern.
+func (self *Cart) SetName(name string) {
+	self.ApplyChange(events.CartNameChanged{Name: name})
 }
 
 // ------------------------- EVENTS -------------------------

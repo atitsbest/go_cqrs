@@ -26,8 +26,9 @@ func NewEventSource(source interface{}) *eventSource {
 }
 
 // Events von einem EventStream lesen.
-func CreateFromEventStream(source interface{}, es []Event) *eventSource {
+func CreateFromEventStream(source interface{}, id EventSourceId, es []Event) *eventSource {
 	result := NewEventSource(source)
+	result.id = id
 	for _, e := range es {
 		result.handleChange(e)
 	}
