@@ -1,10 +1,11 @@
-// Package eventstore provides ...
+// Package storage kümmert sich um die Speicherung der EventSourcing Events.
 package storage
 
 import (
 	"github.com/atitsbest/go_cqrs/eventsourcing"
 )
 
+// MemoryStore speichert EventStream in einer Map im Speichern.
 type MemoryStore struct {
 	items map[eventsourcing.EventSourceId][]eventsourcing.Event
 }
@@ -31,6 +32,7 @@ func (mem *MemoryStore) Save(id eventsourcing.EventSourceId, events []eventsourc
 	return nil
 }
 
+// LoadEventStream lädt alle Events zu einer EventSourceId (gleichzusetzen mit Aggregate).
 func (mem *MemoryStore) LoadEventStream(id eventsourcing.EventSourceId) ([]eventsourcing.Event, error) {
 	changes, ok := mem.items[id]
 
