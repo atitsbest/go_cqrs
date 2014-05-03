@@ -1,21 +1,20 @@
-package test
+package domain
 
 import (
 	"testing"
-	. "github.com/smartystreets/goconvey/convey"
 
-	. "github.com/atitsbest/go_cqrs/cart/entities"
-	"github.com/atitsbest/go_cqrs/common"
+	"github.com/atitsbest/go_cqrs/eventsourcing"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSpec(t *testing.T) {
 	var (
 		sut     *Cart
 		sut2    *Cart
-		stream  []common.Event
-		stream2 []common.Event
-		id      common.EventSourceId
-		id2     common.EventSourceId
+		stream  []eventsourcing.Event
+		stream2 []eventsourcing.Event
+		id      eventsourcing.EventSourceId
+		id2     eventsourcing.EventSourceId
 	)
 
 	Convey("When I create a new cart", t, func() {

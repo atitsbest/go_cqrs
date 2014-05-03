@@ -1,3 +1,3 @@
-package common
+package eventsourcing
 
 type Event interface{}

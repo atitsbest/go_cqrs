@@ -1,13 +1,11 @@
-package entities
+package domain
 
-import (
-	"github.com/atitsbest/go_cqrs/cart/events"
-	"github.com/atitsbest/go_cqrs/common"
-)
+import "github.com/atitsbest/go_cqrs/eventsourcing"
+import "github.com/atitsbest/go_cqrs/tests/events"
 
 type Cart struct {
 	// Muss im CTR initialisiert werden.
-	common.EventSource
+	eventsourcing.EventSource
 
 	name string
 }
@@ -15,7 +13,7 @@ type Cart struct {
 // CTR
 func NewCart() *Cart {
 	cart := new(Cart)
-	cart.EventSource = common.NewEventSource(cart)
+	cart.EventSource = eventsourcing.NewEventSource(cart)
 
 	cart.ApplyChange(events.CartCreated{})
 
@@ -23,9 +21,9 @@ func NewCart() *Cart {
 }
 
 // CTR
-func CreateCartFromEventStream(id common.EventSourceId, es []common.Event) *Cart {
+func CreateCartFromEventStream(id eventsourcing.EventSourceId, es []eventsourcing.Event) *Cart {
 	cart := new(Cart)
-	cart.EventSource = common.CreateFromEventStream(cart, id, es)
+	cart.EventSource = eventsourcing.CreateFromEventStream(cart, id, es)
 
 	return cart
 }

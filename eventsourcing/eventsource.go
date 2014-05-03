@@ -1,4 +1,18 @@
-package common
+// Sequenz für das Laden/Ändern/Speichern eines Entities
+//
+// AL->Repository: GetEntity()
+// Repository-->AL: entity
+// AL->Entity: ChangeName()
+// Entity->Entity: Validieren
+// Entity->EventSource: ApplyChange()
+// EventSource->Entity: HandleNameChanged()
+// AL->Repository: Save(entity)
+// Repository->Entity: UncommitedChanges()
+// Entity-->Repository: []Events
+// Repository->EventStore: Persist([]Events)
+//
+// (graphische Darstellung unter: http://bramp.github.io/js-sequence-diagrams/)
+package eventsourcing
 
 import (
 	"reflect"
