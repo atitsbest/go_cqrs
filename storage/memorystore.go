@@ -18,8 +18,8 @@ func NewMemoryStore() *MemoryStore {
 	}
 }
 
-// Save speichert ein oder mehrere Events unter der angegebenen id.
-func (mem *MemoryStore) Save(id eventsourcing.EventSourceId, events []eventsourcing.Event) error {
+// AppendToStream speichert ein oder mehrere Events unter der angegebenen id.
+func (mem *MemoryStore) AppendToStream(id eventsourcing.EventSourceId, events []eventsourcing.Event) error {
 	changes, ok := mem.items[id]
 
 	if !ok {

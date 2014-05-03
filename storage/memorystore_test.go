@@ -23,7 +23,7 @@ func TestSpec(t *testing.T) {
 
 		Convey("And save an event", func() {
 			original = []eventsourcing.Event{events.CartNameChanged{Name: "Cart"}}
-			sut.Save(id, original)
+			sut.AppendToStream(id, original)
 
 			Convey("And load that event", func() {
 				loaded, err = sut.LoadEventStream(id)

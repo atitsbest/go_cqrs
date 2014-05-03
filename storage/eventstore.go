@@ -6,6 +6,6 @@ import (
 )
 
 type EventStorage interface {
-	Save(id eventsourcing.EventSourceId, events []eventsourcing.Event) error
+	AppendToStream(id eventsourcing.EventSourceId, events []eventsourcing.Event) error
 	LoadEventStream(id eventsourcing.EventSourceId) ([]eventsourcing.Event, error)
 }
