@@ -8,7 +8,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestSpec(t *testing.T) {
+func TestMemoryStore(t *testing.T) {
 	var (
 		sut      *MemoryStore
 		id       eventsourcing.EventSourceId
@@ -38,5 +38,15 @@ func TestSpec(t *testing.T) {
 				})
 			})
 		})
+
+		// Convey("And save two events of an aggregate", func() {
+		// 	Convey("When I load the aggregate twice", func() {
+		// 		Convey("And make changes to both instances", func() {
+		// 			Convey("AppendToStream should recognize concurrency problems", func() {
+		//
+		// 			})
+		// 		})
+		// 	})
+		// })
 	})
 }

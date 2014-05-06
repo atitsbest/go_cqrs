@@ -7,7 +7,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestSpec(t *testing.T) {
+func TestCart(t *testing.T) {
 	var (
 		sut     *Cart
 		sut2    *Cart
