@@ -41,7 +41,9 @@ func (store *SqlStore) AppendToStream(eventsourceId es.EventSourceId, events []e
 			return err
 		}
 
-		eventType := reflect.TypeOf(e).Name()
+		// Achtung: e ist ein Ptr => .Elem() verwenden, sonst liefert Name()
+		// 			immer leer.
+		eventType := reflect.TypeOf(e).Elem().Name()
 		// Wurde das Event registriert?
 		if _, err := store.events.Get(eventType); err != nil {
 			return err
@@ -81,14 +83,15 @@ func (store *SqlStore) LoadEventStream(id es.EventSourceId) ([]es.Event, error) 
 		if err != nil {
 			return nil, err
 		}
-		loadedEvent := reflect.New(t)
+		eventValue := reflect.New(t)
+		event := eventValue.Interface()
 
-		err = json.Unmarshal(data, loadedEvent)
+		err = json.Unmarshal(data, event)
 		if err != nil {
 			return nil, err
 		}
 
-		result = append(result, loadedEvent)
+		result = append(result, event)
 	}
 	return result, nil
 }
