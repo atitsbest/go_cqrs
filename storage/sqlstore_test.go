@@ -16,13 +16,14 @@ func TestSqlStore(t *testing.T) {
 		Event2 struct{ Count int64 }
 	)
 	var (
-		sut *SqlStore
-		id  es.EventSourceId
-		e1  *Event1
-		e2  *Event2
-		err error
-		db  *sql.DB
-		er  *EventRegistration
+		sut          *SqlStore
+		id           es.EventSourceId
+		e1           *Event1
+		e2           *Event2
+		loadedEvents []es.Event
+		err          error
+		db           *sql.DB
+		er           *EventRegistration
 	)
 
 	// DB init.
@@ -55,8 +56,16 @@ func TestSqlStore(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				Convey("And load them from the EventStream", func() {
-					_, err := sut.LoadEventStream(id)
+					loadedEvents, err = sut.LoadEventStream(id)
 					So(err, ShouldBeNil)
+
+					Convey("Then all events should be loaded", func() {
+						So(len(loadedEvents), ShouldEqual, 2)
+
+						// Inhalt der geladenen Events überprüfen.
+						So(loadedEvents[0].(*Event1).Name, ShouldEqual, "Neu")
+						So(loadedEvents[1].(*Event2).Count, ShouldEqual, 17)
+					})
 				})
 			})
 		})
