@@ -2,6 +2,7 @@ package storage
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"testing"
 
@@ -94,5 +95,46 @@ func TestSqlStore(t *testing.T) {
 			})
 		})
 	})
+}
 
+func BenchmarkSqlStore(b *testing.B) {
+	type (
+		Event1 struct{ Name string }
+	)
+	var (
+		sut *SqlStore
+		id  es.EventSourceId
+		err error
+		db  *sql.DB
+		er  *EventRegistration
+	)
+
+	// DB init.
+	dbName := "./sqlstore_benchmark.db"
+	os.Remove(dbName)
+	db, err = sql.Open("sqlite3", dbName)
+	if err != nil {
+		panic(err)
+	}
+
+	// Events registrieren.
+	er = NewEventRegistration()
+	er.Register(Event1{})
+
+	sut, err = NewSqlStore(db, er)
+
+	// Events erzeugen.
+	capacity := 1000
+	events := make([]es.Event, 0, capacity)
+	for n := 0; n < capacity; n++ {
+		events = append(events, &Event1{Name: fmt.Sprintf("Name%i", n)})
+	}
+
+	// Events speichern.
+	sut.AppendToStream(id, events, 0)
+
+	// Eventstream laden.
+	for n := 0; n < b.N; n++ {
+		sut.LoadEventStream(id)
+	}
 }
