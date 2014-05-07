@@ -8,6 +8,7 @@ import (
 	es "github.com/atitsbest/go_cqrs/eventsourcing"
 )
 
+// SqlStore speichert Events in einer Sql-DB.
 type SqlStore struct {
 	db     *sql.DB
 	events *EventRegistration
@@ -34,7 +35,8 @@ func NewSqlStore(db *sql.DB, reg *EventRegistration) (*SqlStore, error) {
 	return result, nil
 }
 
-func (store *SqlStore) AppendToStream(eventsourceId es.EventSourceId, events []es.Event) error {
+// AppendToStream speichert Events zu einem EvenSource/AggregateRoot.
+func (store *SqlStore) AppendToStream(eventsourceID es.EventSourceId, events []es.Event) error {
 	// Transaction starten.
 	tx, err := store.db.Begin()
 	if err != nil {
@@ -56,11 +58,11 @@ func (store *SqlStore) AppendToStream(eventsourceId es.EventSourceId, events []e
 		}
 
 		// TODO: Hier brauchen wir eine EventId
-		eventId := es.NewEventSourceId()
+		eventID := es.NewEventSourceId()
 
 		sql := "insert into events (id, eventsource_id, type, data) values(?, ?, ?, ?)"
 
-		_, err = tx.Exec(sql, eventId.String(), eventsourceId.String(), eventType, se)
+		_, err = tx.Exec(sql, eventID.String(), eventsourceID.String(), eventType, se)
 		if err != nil {
 			tx.Rollback() // TODO: Error von Rollback wird ignoriert. Korrekt?
 			return err
@@ -74,6 +76,7 @@ func (store *SqlStore) AppendToStream(eventsourceId es.EventSourceId, events []e
 	return nil
 }
 
+// LoadEventStream läd alle Events zu einem EventSource/AggregateRoot.
 func (store *SqlStore) LoadEventStream(id es.EventSourceId) ([]es.Event, error) {
 	result := []es.Event{} // Event ist ein Interface, also brauchen wir keinen Pointer.
 
