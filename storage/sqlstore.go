@@ -13,6 +13,7 @@ type SqlStore struct {
 	events *EventRegistration
 }
 
+// NewSqlStore ist der CTR für einen
 func NewSqlStore(db *sql.DB, reg *EventRegistration) (*SqlStore, error) {
 	result := &SqlStore{
 		db:     db,
@@ -34,6 +35,11 @@ func NewSqlStore(db *sql.DB, reg *EventRegistration) (*SqlStore, error) {
 }
 
 func (store *SqlStore) AppendToStream(eventsourceId es.EventSourceId, events []es.Event) error {
+	// Transaction starten.
+	tx, err := store.db.Begin()
+	if err != nil {
+		return err
+	}
 	for _, e := range events {
 		// Event serialisieren.
 		se, err := json.Marshal(e)
@@ -54,10 +60,16 @@ func (store *SqlStore) AppendToStream(eventsourceId es.EventSourceId, events []e
 
 		sql := "insert into events (id, eventsource_id, type, data) values(?, ?, ?, ?)"
 
-		_, err = store.db.Exec(sql, eventId.String(), eventsourceId.String(), eventType, se)
+		_, err = tx.Exec(sql, eventId.String(), eventsourceId.String(), eventType, se)
 		if err != nil {
+			tx.Rollback() // TODO: Error von Rollback wird ignoriert. Korrekt?
 			return err
 		}
+	}
+
+	// Commit.
+	if err = tx.Commit(); err != nil {
+		return err
 	}
 	return nil
 }
@@ -83,9 +95,11 @@ func (store *SqlStore) LoadEventStream(id es.EventSourceId) ([]es.Event, error) 
 		if err != nil {
 			return nil, err
 		}
+		// Event-Instanz erstellen.
 		eventValue := reflect.New(t)
 		event := eventValue.Interface()
 
+		// Aus JSON wieder ein Event machen.
 		err = json.Unmarshal(data, event)
 		if err != nil {
 			return nil, err
