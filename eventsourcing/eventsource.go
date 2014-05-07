@@ -24,12 +24,14 @@ import (
 // Das Interface wir am besten per "Vererbung" verwendet.
 type EventSource interface {
 	ID() EventSourceId
+	Version() uint64
 	ApplyChange(e Event)
 	UncommitedChanges() []Event
 }
 
 type eventSource struct {
 	id      EventSourceId
+	version uint64
 	changes []Event
 	source  interface{}
 }
@@ -59,6 +61,11 @@ func CreateFromEventStream(source interface{}, id EventSourceId, es []Event) *ev
 // UId für diesen EventSoruce
 func (es *eventSource) ID() EventSourceId {
 	return es.id
+}
+
+// Version des EventSource (wird für Concurrency benötigt).
+func (es *eventSource) Version() uint64 {
+	return es.version
 }
 
 // Domain-Event anwenden (aber nicht persistieren)
