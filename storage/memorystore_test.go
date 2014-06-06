@@ -15,6 +15,7 @@ func TestMemoryStore(t *testing.T) {
 		original []eventsourcing.Event
 		loaded   []eventsourcing.Event
 		err      error
+		version  uint64
 	)
 
 	Convey("When I create a new MemoryStore", t, func() {
@@ -23,10 +24,10 @@ func TestMemoryStore(t *testing.T) {
 
 		Convey("And save an event", func() {
 			original = []eventsourcing.Event{events.CartNameChanged{Name: "Cart"}}
-			sut.AppendToStream(id, original)
+			sut.AppendToStream(id, original, 0)
 
 			Convey("And load that event", func() {
-				loaded, err = sut.LoadEventStream(id)
+				loaded, version, err = sut.LoadEventStream(id)
 				So(err, ShouldBeNil)
 
 				Convey("Then I get the saved event", func() {
@@ -36,6 +37,10 @@ func TestMemoryStore(t *testing.T) {
 					loadedEvent := loaded[0].(events.CartNameChanged)
 					So(loadedEvent.Name, ShouldEqual, originalEvent.Name)
 				})
+
+				// Convey("With the current version", func() {
+				// 	So(version, ShouldEqual, 1)
+				// })
 			})
 		})
 

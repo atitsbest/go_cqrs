@@ -3,16 +3,10 @@ package storage
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"reflect"
 
 	es "github.com/atitsbest/go_cqrs/eventsourcing"
 )
-
-// ErrConcurrency gibt an, dass die aktuelle Version eines EventSources nicht mit
-// der aus dem zu speicherden übereinstimmt d.h. der zu speichernde ist nicht mehr
-// aktuell.
-var ErrConcurrency = errors.New("EventStore Concurrency Fehler!")
 
 // SqlStore speichert Events in einer Sql-DB.
 type SqlStore struct {

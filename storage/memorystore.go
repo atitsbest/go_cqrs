@@ -2,6 +2,8 @@
 package storage
 
 import (
+	"fmt"
+
 	"github.com/atitsbest/go_cqrs/eventsourcing"
 )
 
@@ -19,7 +21,7 @@ func NewMemoryStore() *MemoryStore {
 }
 
 // AppendToStream speichert ein oder mehrere Events unter der angegebenen id.
-func (mem *MemoryStore) AppendToStream(id eventsourcing.EventSourceId, events []eventsourcing.Event) error {
+func (mem *MemoryStore) AppendToStream(id eventsourcing.EventSourceId, events []eventsourcing.Event, expectedVersion uint64) error {
 	changes, ok := mem.items[id]
 
 	if !ok {
@@ -29,16 +31,18 @@ func (mem *MemoryStore) AppendToStream(id eventsourcing.EventSourceId, events []
 	for _, e := range events {
 		mem.items[id] = append(changes, e)
 	}
+
+	fmt.Printf("%d CHANGES", len(mem.items[id]))
 	return nil
 }
 
 // LoadEventStream lädt alle Events zu einer EventSourceId (gleichzusetzen mit Aggregate).
-func (mem *MemoryStore) LoadEventStream(id eventsourcing.EventSourceId) ([]eventsourcing.Event, error) {
+func (mem *MemoryStore) LoadEventStream(id eventsourcing.EventSourceId) ([]eventsourcing.Event, uint64, error) {
 	changes, ok := mem.items[id]
 
 	if !ok {
-		return nil, nil
+		return nil, 0, nil
 	}
 
-	return changes, nil
+	return changes, 0, nil
 }
