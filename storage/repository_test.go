@@ -33,6 +33,13 @@ func TestRepository(t *testing.T) {
 			})
 
 			Convey("When I load the entity", func() {
+
+				// Damit ein Entity/EventSource geladen werden kann, muss er zuerst
+				// instanziert werden.
+				// Ein einfaches Instanzieren wie &domain.Cart{} functioniert nicht,
+				// weil dabei der EventSource-Teil des Entities (siehe Cart-CTR) nicht
+				// initialisiert wird und wir beim ApplyChange einen Fehler bekommen.
+				// Dafür brauchen wir noch eine Lösung!
 				loaded = domain.NewCart()
 				err = sut.Load(cart.ID(), loaded)
 
